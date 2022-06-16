@@ -1,23 +1,34 @@
 import { MissingParamsError } from '../errors/missing-params'
 import { badRequest } from '../helpers/http-helper'
 import { Controller } from '../protocols/controller'
+import { EmailValidator } from '../protocols/email-validator'
 import { HttpRequest, HttpResponse } from '../protocols/http'
 
 export class SignUpController implements Controller {
+  constructor(private readonly emailValidator: EmailValidator) {
+    this.emailValidator = emailValidator
+  }
+
   handle(httpRequest: HttpRequest): HttpResponse {
-    const missingRequiredFields = verifyRequiredFields(httpRequest)
+    try {
+      verifyRequiredFields(httpRequest)
+      const email = httpRequest.body.email
+      this.emailValidator.isValid(email)
 
-    if (missingRequiredFields.length > 0)
-      return badRequest(new MissingParamsError(missingRequiredFields))
-
-    return { statusCode: 200, body: 'OK' }
+      return { statusCode: 200, body: 'OK' }
+    } catch (error) {
+      return badRequest(error)
+    }
   }
 }
 
-const verifyRequiredFields = (httpRequest): string[] => {
-  const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']
+const verifyRequiredFields = (httpRequest): void | MissingParamsError => {
+  const requiredFields = [
+    'name',
+    'email',
+    'password',
+    'passwordConfirmation'
+  ].filter((requiredField) => !httpRequest.body[requiredField])
 
-  return requiredFields.filter(
-    (requiredField) => !httpRequest.body[requiredField]
-  )
+  if (requiredFields.length > 0) throw new MissingParamsError(requiredFields)
 }
