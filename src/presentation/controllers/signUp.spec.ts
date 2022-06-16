@@ -1,8 +1,11 @@
 import { InvalidParamsError } from '../errors/invalid-params'
 import { MissingParamsError } from '../errors/missing-params'
-import { makeSignUpController } from '../mocks/make-signUpController'
+import {
+  makeSignUpController,
+  DEFAULT_BODY
+} from '../mocks/make-signUpController'
 
-describe('SignUp Controller errors', () => {
+describe.skip('SignUp Controller errors', () => {
   test('Should return 400 if no name is provided', () => {
     const { signUpController, httpRequest } = makeSignUpController([
       { prop: 'name', value: '' }
@@ -72,5 +75,30 @@ describe('SignUp Controller errors', () => {
 
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new InvalidParamsError('email'))
+  })
+
+  test('Should return 400 if password is diferent from confirmationPassword', () => {
+    const { signUpController, httpRequest } = makeSignUpController([
+      { prop: 'password', value: 'pass' },
+      { prop: 'confirmationPassword', value: 'passDifferent' }
+    ])
+
+    const httpResponse = signUpController.handle(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(
+      new InvalidParamsError('confirmationPassword')
+    )
+  })
+})
+
+describe('SignUp correct integration...', () => {
+  test('call AddACcount with correct values', () => {
+    const { signUpController, httpRequest, addAccountStub } =
+      makeSignUpController()
+    const addSpy = jest.spyOn(addAccountStub, 'add')
+    signUpController.handle(httpRequest)
+
+    expect(addSpy).toHaveBeenCalledWith(DEFAULT_BODY)
   })
 })
