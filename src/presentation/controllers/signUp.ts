@@ -1,7 +1,7 @@
-import { AddAccount } from '../../domain/usecases/add-account'
+import { AddAccount, AddAccountModel } from '../../domain/usecases/add-account'
 import { InvalidParamsError } from '../errors/invalid-params'
 import { MissingParamsError } from '../errors/missing-params'
-import { badRequest } from '../helpers/http-helper'
+import { badRequest, OK } from '../helpers/http-helper'
 import { DefaultBody } from '../mocks/make-signUpController'
 import { Controller } from '../protocols/controller'
 import { EmailValidator } from '../protocols/email-validator'
@@ -16,15 +16,19 @@ export class SignUpController implements Controller {
     this.addAccount = addAccount
   }
 
-  handle(httpRequest: HttpRequest<DefaultBody>): HttpResponse {
+  async handle(httpRequest: HttpRequest<DefaultBody>): Promise<HttpResponse> {
     try {
       verifyRequiredFields(httpRequest)
       this.emailValidator.isValid(httpRequest.body.email)
       verifyPasswordEqualsConfirmationPassword(httpRequest)
 
-      this.addAccount.add(httpRequest.body)
-
-      return { statusCode: 200, body: 'OK' }
+      const body: AddAccountModel = {
+        name: httpRequest.body.name,
+        email: httpRequest.body.email,
+        password: httpRequest.body.password
+      }
+      const account = await this.addAccount.add(body)
+      return OK(account)
     } catch (error) {
       return badRequest(error)
     }

@@ -14,13 +14,13 @@ type MakeSignUpController = {
 type ModProperties = { prop: string; value: string }
 
 export type DefaultBody = {
-  name: string
-  email: string
-  password: string
-  passwordConfirmation: string
+  name?: string
+  email?: string
+  password?: string
+  passwordConfirmation?: string
 }
 
-export const DEFAULT_BODY = {
+const DEFAULT_BODY = {
   name: 'name',
   email: 'email',
   password: 'pass',
@@ -28,17 +28,12 @@ export const DEFAULT_BODY = {
 }
 
 export const makeSignUpController = (
-  modProperties: ModProperties[] = []
+  body: DefaultBody = DEFAULT_BODY
 ): MakeSignUpController => {
   // Making the HttpRequest
-  const body = DEFAULT_BODY
-
-  modProperties.forEach(({ prop, value }) => (body[prop] = value))
   const httpRequest = {
     body
   }
-
-  // Make AddACcount
 
   // Making the signUpController
   const emailValidatorStub = makeEmailValidator()
@@ -64,11 +59,11 @@ const makeEmailValidator = (): EmailValidator => {
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    add(newAccount: AddAccountModel): AccountModel {
+    async add(newAccount: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
-        id: 5
+        id: 1
       }
-      return fakeAccount
+      return new Promise((resolve) => resolve(fakeAccount))
     }
   }
   return new AddAccountStub()
