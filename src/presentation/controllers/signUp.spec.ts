@@ -1,45 +1,6 @@
 import { InvalidParamsError } from '../errors/invalid-params'
 import { MissingParamsError } from '../errors/missing-params'
-import { EmailValidator } from '../protocols/email-validator'
-import { HttpRequest } from '../protocols/http'
-import { SignUpController } from './signUp'
-
-type MakeSignUpController = {
-  signUpController: SignUpController
-  httpRequest: HttpRequest
-}
-
-type ModProperties = { prop: string; value: string }
-
-const makeSignUpController = (
-  modProperties: ModProperties[] = []
-): MakeSignUpController => {
-  // Making the HttpRequest
-  const body = {
-    name: 'name',
-    email: 'email',
-    password: 'pass',
-    passwordConfirmation: 'pass'
-  }
-
-  modProperties.forEach(({ prop, value }) => (body[prop] = value))
-  const httpRequest = {
-    body
-  }
-
-  // Making the signUpController
-  class EmailValidatorStub implements EmailValidator {
-    isValid(email: string): void | InvalidParamsError {
-      if (email === 'invalid') {
-        throw new InvalidParamsError('email')
-      }
-    }
-  }
-  const emailValidatorStub = new EmailValidatorStub()
-  const signUpController = new SignUpController(emailValidatorStub)
-
-  return { signUpController, httpRequest }
-}
+import { makeSignUpController } from '../mocks/make-signUpController'
 
 describe('SignUp Controller errors', () => {
   test('Should return 400 if no name is provided', () => {
