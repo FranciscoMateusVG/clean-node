@@ -92,13 +92,22 @@ describe.skip('SignUp Controller errors', () => {
   })
 })
 
-describe('SignUp correct integration...', () => {
-  test('call AddACcount with correct values', () => {
+describe('SignUp correct integration with addAccount', () => {
+  test('calls with correct values', () => {
     const { signUpController, httpRequest, addAccountStub } =
       makeSignUpController()
     const addSpy = jest.spyOn(addAccountStub, 'add')
     signUpController.handle(httpRequest)
 
     expect(addSpy).toHaveBeenCalledWith(DEFAULT_BODY)
+  })
+  test('return 200 if valid data is provided', () => {
+    const { signUpController, httpRequest, addAccountStub } =
+      makeSignUpController()
+
+    const httpResponse = signUpController.handle(httpRequest)
+
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({ id: 1 })
   })
 })
