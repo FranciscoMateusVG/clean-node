@@ -12,8 +12,7 @@ export class SignUpController implements Controller {
   handle(httpRequest: HttpRequest): HttpResponse {
     try {
       verifyRequiredFields(httpRequest)
-      const email = httpRequest.body.email
-      this.emailValidator.isValid(email)
+      this.emailValidator.isValid(httpRequest.body.email)
 
       return { statusCode: 200, body: 'OK' }
     } catch (error) {
