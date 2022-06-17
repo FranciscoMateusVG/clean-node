@@ -139,6 +139,6 @@ describe('SignUp correct integration with addAccount', () => {
     const httpResponse = await signUpController.handle(httpRequest)
 
     expect(httpResponse.statusCode).toBe(200)
-    expect(httpResponse.body).toEqual({ id: 1 })
+    expect(httpResponse.body).toEqual({ id: '500' })
   })
 })

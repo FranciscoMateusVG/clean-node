@@ -61,7 +61,7 @@ const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
     async add(newAccount: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
-        id: 1
+        id: '500'
       }
       return new Promise((resolve) => resolve(fakeAccount))
     }

@@ -25,7 +25,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
     async add(newAccount: AddAccountModel): Promise<AccountModel> {
       return new Promise((resolve, reject) => {
-        const fakeAccount = { id: 1 }
+        const fakeAccount = { id: '1' }
         resolve(fakeAccount)
       })
     }
@@ -100,7 +100,7 @@ describe('DbAddAccount Usecase', () => {
     const account = await dbAddAccount.add(accountData)
 
     expect(account).toEqual({
-      id: 1
+      id: '1'
     })
   })
 
