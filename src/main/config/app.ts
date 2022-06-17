@@ -1,7 +1,9 @@
 import express from 'express'
-import activateMiddlewares from './middlewares'
+import middlewareSetup from './middlewareSetup/middlewareSetup'
+import setUpRouter from './routesSetup/routesSetup'
 
 const app = express()
-activateMiddlewares(app)
+middlewareSetup(app)
+setUpRouter(app)
 
 export default app
