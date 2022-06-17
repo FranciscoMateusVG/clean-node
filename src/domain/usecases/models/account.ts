@@ -1,3 +1,3 @@
 export interface AccountModel {
-  id: number
+  id: string
 }
