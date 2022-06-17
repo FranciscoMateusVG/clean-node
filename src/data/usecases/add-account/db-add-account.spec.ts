@@ -22,7 +22,7 @@ const makeEncrypter = (): Encrypter => {
 }
 
 const makeAddAccountRepository = (): AddAccountRepository => {
-  class AddAccountRepository implements AddAccountRepository {
+  class AddAccountRepositoryStub implements AddAccountRepository {
     async add(newAccount: AddAccountModel): Promise<AccountModel> {
       return new Promise((resolve, reject) => {
         const fakeAccount = { id: 1 }
@@ -30,7 +30,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
       })
     }
   }
-  return new AddAccountRepository()
+  return new AddAccountRepositoryStub()
 }
 
 const makeDbAddAccount = (): ReturnMakeDbAddAccount => {
@@ -86,6 +86,21 @@ describe('DbAddAccount Usecase', () => {
       name: 'name',
       email: 'email',
       password: 'hashed_password'
+    })
+  })
+
+  test('Should return an account on success', async () => {
+    const { dbAddAccount, addAccoutRepositoryStub } = makeDbAddAccount()
+    const addSpy = jest.spyOn(addAccoutRepositoryStub, 'add')
+    const accountData = {
+      name: 'name',
+      email: 'email',
+      password: 'password'
+    }
+    const account = await dbAddAccount.add(accountData)
+
+    expect(account).toEqual({
+      id: 1
     })
   })
 
