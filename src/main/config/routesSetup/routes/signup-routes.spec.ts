@@ -16,14 +16,14 @@ describe('SignUp Routes', () => {
     await accountCollection.deleteMany({})
   })
   test('should return account on success', async () => {
-    await request(app)
-      .post('/api/signUp')
-      .send({
-        name: 'test',
-        email: 'test@example.com',
-        password: 'test',
-        passwordConfirmation: 'test'
-      })
-      .expect(200)
+    const response = await request(app).post('/api/signUp').send({
+      name: 'test',
+      email: 'test@example.com',
+      password: 'test',
+      passwordConfirmation: 'test'
+    })
+    expect(response.status).toBe(200)
+    const schema = expect.objectContaining({ id: expect.any(String) })
+    expect(response.body).toEqual(schema)
   })
 })
