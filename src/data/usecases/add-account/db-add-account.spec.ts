@@ -1,9 +1,13 @@
-import { Encrypter } from '../protocols/encrypter'
+import { AddAccountModel } from '../../../domain/usecases/add-account'
+import { AccountModel } from '../../../domain/usecases/models/account'
+import { Encrypter } from '../../protocols/encrypter'
 import { DbAddAccount } from './db-add-account'
+import { AddAccountRepository } from '../../protocols/add-account-repository'
 
 type ReturnMakeDbAddAccount = {
   dbAddAccount: DbAddAccount
   encrypterStub: Encrypter
+  addAccoutRepositoryStub: AddAccountRepository
 }
 
 const makeEncrypter = (): Encrypter => {
@@ -17,11 +21,24 @@ const makeEncrypter = (): Encrypter => {
   return new EncrypterStub()
 }
 
+const makeAddAccountRepository = (): AddAccountRepository => {
+  class AddAccountRepository implements AddAccountRepository {
+    async add(newAccount: AddAccountModel): Promise<AccountModel> {
+      return new Promise((resolve, reject) => {
+        const fakeAccount = { id: 1 }
+        resolve(fakeAccount)
+      })
+    }
+  }
+  return new AddAccountRepository()
+}
+
 const makeDbAddAccount = (): ReturnMakeDbAddAccount => {
   const encrypterStub = makeEncrypter()
-  const dbAddAccount = new DbAddAccount(encrypterStub)
+  const addAccoutRepositoryStub = makeAddAccountRepository()
+  const dbAddAccount = new DbAddAccount(encrypterStub, addAccoutRepositoryStub)
 
-  return { dbAddAccount, encrypterStub }
+  return { dbAddAccount, encrypterStub, addAccoutRepositoryStub }
 }
 
 describe('DbAddAccount Usecase', () => {
@@ -53,5 +70,22 @@ describe('DbAddAccount Usecase', () => {
     const promise = dbAddAccount.add(accountData)
 
     await expect(promise).rejects.toThrow()
+  })
+
+  test('Should call AddAccoutRepository with correct values', async () => {
+    const { dbAddAccount, addAccoutRepositoryStub } = makeDbAddAccount()
+    const addSpy = jest.spyOn(addAccoutRepositoryStub, 'add')
+    const accountData = {
+      name: 'name',
+      email: 'email',
+      password: 'password'
+    }
+    await dbAddAccount.add(accountData)
+
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'name',
+      email: 'email',
+      password: 'hashed_password'
+    })
   })
 })
