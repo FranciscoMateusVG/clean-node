@@ -8,10 +8,10 @@ import { EmailValidator } from '../protocols/email-validator'
 import { HttpRequest, HttpResponse } from '../protocols/http'
 
 export class SignUpController implements Controller {
-  constructor(
-    private readonly emailValidator: EmailValidator,
-    private readonly addAccount: AddAccount
-  ) {
+  private readonly emailValidator: EmailValidator
+  private readonly addAccount: AddAccount
+
+  constructor(emailValidator: EmailValidator, addAccount: AddAccount) {
     this.emailValidator = emailValidator
     this.addAccount = addAccount
   }
